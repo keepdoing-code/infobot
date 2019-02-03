@@ -1,4 +1,4 @@
-package ru.usefulcity.BotTempale;
+package ru.usefulcity.Controller;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -11,8 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import ru.usefulcity.BotSettings;
-import ru.usefulcity.TextMenu.Menu;
-import ru.usefulcity.TextMenu.MenuWrapper;
+import ru.usefulcity.Model.Menu;
 import ru.usefulcity.Log;
 
 import java.util.ArrayList;
@@ -38,13 +37,21 @@ public class DBManBot extends TelegramLongPollingBot {
             String call_data = update.getCallbackQuery().getData();
             long message_id = update.getCallbackQuery().getMessage().getMessageId();
             long chat_id = update.getCallbackQuery().getMessage().getChatId();
+            MenuWrapper menuWrapper = dialogList.get(chat_id);
+
+            if(menuWrapper.isNumber(call_data)){
+
+            } else {
+
+            }
 
             if (call_data.equals("key")) {
                 String answer = "Updated message text";
                 EditMessageText new_message = new EditMessageText()
                         .setChatId(chat_id)
                         .setMessageId((int)message_id)
-                        .setText(answer);
+                        .setText(answer)
+                        .setReplyMarkup(null);
                 try {
                     execute(new_message);
                 } catch (TelegramApiException e) {
@@ -62,7 +69,7 @@ public class DBManBot extends TelegramLongPollingBot {
 
 
 
-            if (isNewChat(chatId)) {
+            if (isNewChat(chatId) || "/start".equals(messageText)) {
                 startChat(chatId);
                 sendInlineKeyboard(chatId);
                 return;
@@ -74,16 +81,24 @@ public class DBManBot extends TelegramLongPollingBot {
     }
 
 
+
+
+
     private void sendInlineKeyboard(final long chatId) {
         SendMessage message = new SendMessage()
                 .setChatId(chatId)
                 .setText("Here is your keyboard");
 
+
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        List<InlineKeyboardButton> rowInline = new ArrayList<>();
-        rowInline.add(new InlineKeyboardButton().setText("key").setCallbackData("key"));
-        rowsInline.add(rowInline);
+        Menu menu = dialogList.get(chatId).getMenuPointer();
+
+        for(Menu m: menu){
+            List<InlineKeyboardButton> colInline = new ArrayList<>();
+            colInline.add(new InlineKeyboardButton().setText(m.getName()).setCallbackData(m.getId()));
+            rowsInline.add(colInline);
+        }
 
         markupInline.setKeyboard(rowsInline);
         message.setReplyMarkup(markupInline);
@@ -126,7 +141,7 @@ public class DBManBot extends TelegramLongPollingBot {
 
     private void startChat(final long chatId) {
         dialogList.put(chatId, new MenuWrapper(this.menu, chatId));
-        sendMessage(chatId, MenuWrapper.printMenu(this.menu));
+        //sendMessage(chatId, MenuWrapper.printMenu(this.menu));
     }
 
 

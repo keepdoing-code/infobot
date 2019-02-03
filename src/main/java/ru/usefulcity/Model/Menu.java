@@ -1,4 +1,4 @@
-package ru.usefulcity.TextMenu;
+package ru.usefulcity.Model;
 
 
 import java.util.*;
@@ -9,7 +9,7 @@ import java.util.*;
 public class Menu implements Iterable<Menu> {
     private final String name;
     private Menu rootMenu = null;
-    private Card cardInfo = null;
+    private Card card = null;
     private int itemsCounter = 0;
     private int id;
     private Map<Integer, Menu> items = new HashMap<>();
@@ -18,7 +18,7 @@ public class Menu implements Iterable<Menu> {
         this.name = name;
     }
 
-    public Menu(Card card){
+    public Menu(Card card) {
         this.setCard(card);
         this.name = card.get(Card.Field.name);
     }
@@ -34,32 +34,45 @@ public class Menu implements Iterable<Menu> {
         addItem(subMenu);
     }
 
-    public Menu getById(int menuId){
+    public Menu getById(int menuId) {
         return items.get(menuId);
     }
 
-    public Menu getRootMenu(){ return rootMenu; }
+    public Menu getRootMenu() {
+        return rootMenu;
+    }
 
-    public Card getCard() { return this.cardInfo; }
+    public String getName() {
+        return name;
+    }
 
-    public String getName(){ return name; }
+    public boolean haveCard() {
+        return card != null;
+    }
 
-    public boolean haveRoot(){return rootMenu != null;}
+    public Card getCard() {
+        return this.card;
+    }
 
-    public boolean isItem() { return itemsCounter == 0; }
+    public boolean haveRoot() {
+        return rootMenu != null;
+    }
 
-    public boolean haveCard() { return cardInfo != null; } //TODO redundant method, deprecated
+    private void setRootMenu(Menu rootMenu) {
+        this.rootMenu = rootMenu;
+    }
 
-    public int getId(){ return id;}
+    private void setCard(Card card) {
+        this.card = card;
+    }
 
-    private Menu setCard(Card card) {
-        this.cardInfo = card;
-        return this;
-    } //TODO deprecated because it is repeated class constructor
+    public String getId() {
+        return String.valueOf(id);
+    }
 
-    private void setId(int id) { this.id = id; }
-
-    private void setRootMenu(Menu rootMenu) { this.rootMenu = rootMenu; }
+    private void setId(int id) {
+        this.id = id;
+    }
 
     @Override
     public Iterator<Menu> iterator() {

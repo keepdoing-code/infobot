@@ -4,9 +4,9 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import ru.usefulcity.BotTempale.*;
-import ru.usefulcity.TextMenu.Card;
-import ru.usefulcity.TextMenu.Menu;
+import ru.usefulcity.Controller.DBManBot;
+import ru.usefulcity.Model.Card;
+import ru.usefulcity.Model.Menu;
 
 public class App 
 {

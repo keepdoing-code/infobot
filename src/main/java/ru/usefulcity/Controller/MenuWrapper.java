@@ -1,4 +1,7 @@
-package ru.usefulcity.TextMenu;
+package ru.usefulcity.Controller;
+
+import ru.usefulcity.Model.Card;
+import ru.usefulcity.Model.Menu;
 
 import java.util.InputMismatchException;
 
@@ -13,16 +16,13 @@ public class MenuWrapper {
     private static final String MENU_BRACKET = " <> ";
     private static final char NEW_LINE = '\n';
     private final long chatId;
-    private Menu pointer;
+    private Menu menuPointer;
 
     public MenuWrapper(final Menu startMenu, final long chatId){
-        this.pointer = startMenu;
+        this.menuPointer = startMenu;
         this.chatId = chatId;
     }
 
-    public long getChatId(){
-        return chatId;
-    }
 
     public String dialog(final String inString){
         return process(this, inString);
@@ -55,48 +55,48 @@ public class MenuWrapper {
         return sb.toString();
     }
 
-    public Menu getPointer(){
-        return pointer;
+    public Menu getMenuPointer(){
+        return menuPointer;
     }
 
     public Menu goRootMenu(){
-        while (pointer.haveRoot()){
-            setCurrentMenu(pointer.getRootMenu());
+        while (menuPointer.haveRoot()){
+            setCurrentMenu(menuPointer.getRootMenu());
         }
-        return pointer;
+        return menuPointer;
     }
 
-    private void setCurrentMenu(Menu menu){
-        this.pointer = menu;
+    public void setCurrentMenu(Menu menu){
+        this.menuPointer = menu;
     }
 
-    private static String process(MenuWrapper wrapper, final String inString) {
+    public static String process(MenuWrapper wrapper, final String inString) {
         if (isNumber(inString))
             return processNumber(Integer.parseInt(inString), wrapper);
 
         return processCommand(inString, wrapper);
     }
 
-    private static String processNumber(final int number, MenuWrapper wrapper){
+    public static String processNumber(final int number, MenuWrapper wrapper){
 
         StringBuilder sb = new StringBuilder();
-        Menu selectedMenu = wrapper.getPointer().getById(number);
+        Menu selectedMenu = wrapper.getMenuPointer().getById(number);
 
         if (selectedMenu == null) {
             sb
                     .append(WRONG_ITEM)
                     .append(NEW_LINE)
                     .append(NEW_LINE)
-                    .append(printMenu(wrapper.getPointer()));
+                    .append(printMenu(wrapper.getMenuPointer()));
             return sb.toString();
         }
 
-        if (selectedMenu.isItem()) {
+        if (selectedMenu.haveCard()) {
             sb
                     .append(printCard(selectedMenu.getCard()))
                     .append(NEW_LINE)
                     .append(NEW_LINE)
-                    .append(printMenu(wrapper.getPointer()));
+                    .append(printMenu(wrapper.getMenuPointer()));
             return sb.toString();
         }
 
@@ -105,20 +105,20 @@ public class MenuWrapper {
         return sb.toString();
     }
 
-    private static String processCommand(final String inString, MenuWrapper wrapper){
+    public static String processCommand(final String inString, MenuWrapper wrapper){
         switch (inString) {
             case "b":
             case "B":
-                if (wrapper.getPointer().haveRoot()) {
-                    wrapper.setCurrentMenu(wrapper.getPointer().getRootMenu());
+                if (wrapper.getMenuPointer().haveRoot()) {
+                    wrapper.setCurrentMenu(wrapper.getMenuPointer().getRootMenu());
                 }
-                return printMenu(wrapper.getPointer());
+                return printMenu(wrapper.getMenuPointer());
             default:
                 return UNKNOWN_COMMAND + ASK_STRING;
         }
     }
 
-    private static boolean isNumber(final String str) {
+    public static boolean isNumber(final String str) {
         try {
             Integer.parseInt(str);
             return true;

@@ -1,7 +1,5 @@
 package ru.usefulcity.Controller;
 
-import ru.usefulcity.ActionMenu.CardDB;
-
 import java.util.ArrayList;
 
 public class DBQueries {
@@ -63,9 +61,9 @@ public class DBQueries {
         dbWorker.prepExec(ADD_SUBMENU, itemName, rootMenuId);
     }
 
-    public void addCard(CardDB cardDB) {
-        dbWorker.prepExec(ADD_CARD, cardDB.getAsArray());
-    }
+//    public void addCard(CardDB cardDB) {
+//        dbWorker.prepExec(ADD_CARD, cardDB.getAsArray());
+//    }
 
     public void removeMenu(int menuId) {
         dbWorker.prepExec(REMOVE_MENU, menuId, menuId);

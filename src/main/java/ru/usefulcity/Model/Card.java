@@ -1,12 +1,10 @@
-package ru.usefulcity.TextMenu;
+package ru.usefulcity.Model;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-/**
- * Created by yuri on 03.12.18.
- */
+
 public class Card implements Iterable<String>{
 
     private Map<Field, String> card = new HashMap<>(4);
