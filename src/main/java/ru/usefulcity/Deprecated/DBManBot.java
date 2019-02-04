@@ -1,4 +1,4 @@
-package ru.usefulcity.Controller;
+package ru.usefulcity.Deprecated;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -39,6 +39,7 @@ public class DBManBot extends TelegramLongPollingBot {
             long chat_id = update.getCallbackQuery().getMessage().getChatId();
             MenuWrapper menuWrapper = dialogList.get(chat_id);
 
+            Log.out("here callback message ",call_data);
             if(menuWrapper.isNumber(call_data)){
 
             } else {

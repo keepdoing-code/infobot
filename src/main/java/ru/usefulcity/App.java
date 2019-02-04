@@ -4,7 +4,7 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import ru.usefulcity.Controller.DBManBot;
+import ru.usefulcity.Controller.InfoBot;
 import ru.usefulcity.Model.Card;
 import ru.usefulcity.Model.Menu;
 
@@ -16,7 +16,7 @@ public class App
         TelegramBotsApi botsApi = new TelegramBotsApi();
 
         try{
-            botsApi.registerBot(new DBManBot(createMenu()));
+            botsApi.registerBot(new InfoBot(createMenu()));
 
         }catch (TelegramApiException e){
             e.printStackTrace();

@@ -1,4 +1,4 @@
-package ru.usefulcity.Controller;
+package ru.usefulcity.Deprecated;
 
 import ru.usefulcity.Model.Card;
 import ru.usefulcity.Model.Menu;

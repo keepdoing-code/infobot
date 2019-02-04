@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.usefulcity.BotSettings;
+import ru.usefulcity.Log;
 import ru.usefulcity.Model.Menu;
 
 import java.util.HashMap;
@@ -39,10 +40,10 @@ public class InfoBot extends TelegramLongPollingBot {
             long msgId = update.getCallbackQuery().getMessage().getMessageId();
             long chatId = update.getCallbackQuery().getMessage().getChatId();
 
-            //process data and send response
-
-            Dialog currentDialog = dialogList.get(chatId);
-            currentDialog.processItem(callbackData);
+            Log.out("here callback message ",callbackData);
+            Dialog dialog = dialogList.get(chatId);
+            dialog.processItem(callbackData);
+            sendMessage(chatId, msgId, dialog.getEditMessage(), dialog.getMenuItems());
 
 
         } else if (update.hasMessage() && update.getMessage().hasText()) {
@@ -73,10 +74,12 @@ public class InfoBot extends TelegramLongPollingBot {
      *
      * @param editText - submenu or root menu
      */
-    private void sendMessage(long chatId, EditMessageText editText, InlineKeyboardMarkup inlineKeyboard) {
+    private void sendMessage(long chatId, long message_id, EditMessageText editText, InlineKeyboardMarkup inlineKeyboard) {
         editText
                 .setReplyMarkup(inlineKeyboard)
-                .setChatId(chatId);
+                .setChatId(chatId)
+                .setMessageId((int) message_id)
+                .setText(" - ");
         try {
             execute(editText);
         } catch (TelegramApiException e) {
