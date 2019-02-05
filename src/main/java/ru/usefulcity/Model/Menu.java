@@ -1,49 +1,41 @@
 package ru.usefulcity.Model;
 
-
 import java.util.*;
 
-/**
- * Created by yuri on 02.12.18.
- */
 public class Menu implements Iterable<Menu> {
+    private static int uniqueID = 0;
     private final String name;
-    private Menu rootMenu = null;
+    private Menu parentMenu = null;
     private Card card = null;
-    private int itemsCounter = 0;
-    private int id;
+    private int id = -1;
     private Map<Integer, Menu> items = new HashMap<>();
 
     public Menu(String name) {
         this.name = name;
+        this.setUniqueId();
     }
 
     public Menu(Card card) {
+        this(card.getName());
         this.setCard(card);
-        this.name = card.get(Card.Field.name);
     }
 
-    public int addItem(Menu item) {
-        items.put(itemsCounter, item);
-        item.setId(itemsCounter);
-        return itemsCounter++;
+    public void addSubmenu(Menu item) {
+        int intID = Integer.valueOf(item.getId());
+        item.setParentMenu(this);
+        items.put(intID, item);
     }
 
-    public void addSubMenu(Menu subMenu) {
-        subMenu.setRootMenu(this);
-        addItem(subMenu);
-    }
-
-    public Menu getById(int menuId) {
+    public Menu getSubmenu(int menuId) {
         return items.get(menuId);
     }
 
-    public Menu getRootMenu() {
-        return rootMenu;
+    public boolean haveParent() {
+        return parentMenu != null;
     }
 
-    public String getName() {
-        return name;
+    public Menu getParent() {
+        return parentMenu;
     }
 
     public boolean haveCard() {
@@ -54,24 +46,28 @@ public class Menu implements Iterable<Menu> {
         return this.card;
     }
 
-    public boolean haveRoot() {
-        return rootMenu != null;
-    }
-
-    private void setRootMenu(Menu rootMenu) {
-        this.rootMenu = rootMenu;
-    }
-
-    private void setCard(Card card) {
-        this.card = card;
+    public String getName() {
+        return name;
     }
 
     public String getId() {
         return String.valueOf(id);
     }
 
-    private void setId(int id) {
-        this.id = id;
+
+    private void setParentMenu(Menu upMenu) {
+        this.parentMenu = upMenu;
+    }
+
+    private void setCard(Card card) {
+        this.card = card;
+    }
+
+    private void setUniqueId() {
+        if (this.id == -1) {
+            this.id = uniqueID;
+            uniqueID++;
+        }
     }
 
     @Override

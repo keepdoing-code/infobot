@@ -1,31 +1,23 @@
 package ru.usefulcity.Model;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+public class Card {
+    private String name;
+    private String text = "";
 
+    public Card(String name) {
+        this.name = name;
+    }
 
-public class Card implements Iterable<String>{
-
-    private Map<Field, String> card = new HashMap<>(4);
-
-    public Card(){}
-
-    public Card add(Field field, String param){
-        card.put(field, param);
+    public Card add(String str) {
+        text = text + str + "\r\n";
         return this;
     }
 
-    public String get(Field field){
-        return card.get(field);
+    public String getText() {
+        return name + "\r\n" + text;
     }
 
-    @Override
-    public Iterator<String> iterator() {
-        return card.values().iterator();
-    }
-
-    public enum Field {
-        name, desc, phone, link
+    public String getName() {
+        return name;
     }
 }

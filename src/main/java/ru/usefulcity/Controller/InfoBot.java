@@ -1,5 +1,7 @@
 package ru.usefulcity.Controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -22,6 +24,7 @@ import static ru.usefulcity.Controller.Constants.*;
  * @version 1.0
  */
 public class InfoBot extends TelegramLongPollingBot {
+    Logger log = LoggerFactory.getLogger(InfoBot.class);
     private final Menu menu;
     private Map<Long, Dialog> dialogList = new HashMap<>();
 
@@ -39,12 +42,18 @@ public class InfoBot extends TelegramLongPollingBot {
             String callbackData = update.getCallbackQuery().getData();
             long msgId = update.getCallbackQuery().getMessage().getMessageId();
             long chatId = update.getCallbackQuery().getMessage().getChatId();
-
-            Log.out("here callback message ",callbackData);
             Dialog dialog = dialogList.get(chatId);
-            dialog.processItem(callbackData);
-            sendMessage(chatId, msgId, dialog.getEditMessage(), dialog.getMenuItems());
 
+
+            if (dialog == null) {
+                dialog = new Dialog(menu);
+                dialogList.put(chatId, dialog);
+            }
+
+            dialog.processItem(callbackData);
+            EditMessageText editMessageText = dialog.getEditMessage();
+            InlineKeyboardMarkup inlineKeyboardMarkup = dialog.getMenuItems();
+            sendMessage(chatId, msgId, editMessageText, inlineKeyboardMarkup);
 
         } else if (update.hasMessage() && update.getMessage().hasText()) {
             /**
@@ -57,15 +66,20 @@ public class InfoBot extends TelegramLongPollingBot {
             String user = update.getMessage().getChat().getUserName(); //this only for logger
 
             if (!dialogList.containsKey(chatId) || "/start".equals(messageText)) {
-                Dialog dialog = new Dialog(menu);
-                dialogList.put(chatId, dialog);
-                sendMessage(chatId, MAIN_MENU, dialog.getMenuItems());
+                newDialog(chatId);
                 return;
             }
 
             sendMessage(chatId, WRONG_INPUT);
             sendMessage(chatId, MAIN_MENU, dialogList.get(chatId).getMenuItems());
         }
+    }
+
+
+    private void newDialog(long chatId) {
+        Dialog dialog = new Dialog(menu);
+        dialogList.put(chatId, dialog);
+        sendMessage(chatId, MAIN_MENU, dialog.getMenuItems());
     }
 
 
@@ -78,8 +92,7 @@ public class InfoBot extends TelegramLongPollingBot {
         editText
                 .setReplyMarkup(inlineKeyboard)
                 .setChatId(chatId)
-                .setMessageId((int) message_id)
-                .setText(" - ");
+                .setMessageId((int) message_id);
         try {
             execute(editText);
         } catch (TelegramApiException e) {

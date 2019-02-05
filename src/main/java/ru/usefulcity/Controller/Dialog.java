@@ -1,6 +1,7 @@
 package ru.usefulcity.Controller;
 
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -9,6 +10,7 @@ import ru.usefulcity.Model.Menu;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static ru.usefulcity.Controller.Constants.*;
 
@@ -19,39 +21,37 @@ import static ru.usefulcity.Controller.Constants.*;
  * @version 1.0
  */
 public class Dialog {
+    Logger log = LoggerFactory.getLogger(Dialog.class);
+    private Menu rootMenu;
     private Menu currentMenu;
+    private Menu selectedItem;
     private EditMessageText editMessage = new EditMessageText().setText("");
 
 
-    public Dialog(Menu currentMenu) {
-        this.currentMenu = currentMenu;
+    public Dialog(Menu rootMenu) {
+        this.currentMenu = rootMenu;
+        this.rootMenu = rootMenu;
     }
 
 
     public boolean processItem(String itemId) {
         if (isNumber(itemId)) {
-            Menu item = currentMenu.getById(Integer.parseInt(itemId));
+            int i = Integer.parseInt(itemId);
+            selectedItem = currentMenu.getSubmenu(i);
+            log.info("Input : {}, curr: {} {}", itemId, currentMenu.getName(), currentMenu.getId());
 
-            if (item == null) return false; //if something gone wrong return false to show Error message
-
-            if (item.haveCard()) {
-                StringBuilder sb = new StringBuilder();
-                for (String s : item.getCard()) {
-                    sb.append(s).append(NEW_LINE);
-                }
-                editMessage.setText(sb.toString());
-                return true;
+            if (selectedItem != null) {
+                log.info(" selected: {} {}", selectedItem.getName(), selectedItem.getId());
+                currentMenu = selectedItem; //if not card than set submenu as current
             }
-
-            currentMenu = item; //if not card than set submenu as current
-
         } else {
-            //if command do some work
             switch (itemId) {
-                case "b": //go back to root menu
-                    if (currentMenu.haveRoot()) {
-                        currentMenu = currentMenu.getRootMenu();
+                case GO_BACK_ID:
+                    if (currentMenu.haveParent()) {
+                        currentMenu = currentMenu.getParent();
                     }
+                case MAIN_MENU_ID:
+                    currentMenu = rootMenu;
                 default:
                     return false;
             }
@@ -59,35 +59,45 @@ public class Dialog {
         return true;
     }
 
-
     public EditMessageText getEditMessage() {
+        if (currentMenu.haveCard()) {
+            editMessage.setText(currentMenu.getCard().getText());
+        } else {
+            editMessage.setText(currentMenu.getName());
+        }
+
         return editMessage;
     }
 
-
     public InlineKeyboardMarkup getMenuItems() {
-        editMessage.setText(currentMenu.getName());
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
         for (Menu m : currentMenu) {
-            List<InlineKeyboardButton> columns = new ArrayList<>();
-            columns.add(new InlineKeyboardButton().setText(m.getName()).setCallbackData(m.getId()));
-            rows.add(columns);
+            rows.add(addColumn(m.getName(), m.getId()));
         }
 
-        if(currentMenu.haveRoot()){
-            List<InlineKeyboardButton> columns = new ArrayList<>();
-            columns.add(new InlineKeyboardButton().setText(GO_BACK).setCallbackData(GO_BACK_ID));
-            rows.add(columns);
+        if (currentMenu.haveCard()) {
+            rows.add(addColumn(MAIN_MENU, MAIN_MENU_ID));
         }
+
+        if (currentMenu.haveParent()) {
+            rows.add(addColumn(GO_BACK, GO_BACK_ID));
+        }
+
 
         inlineKeyboardMarkup.setKeyboard(rows);
         return inlineKeyboardMarkup;
     }
 
 
-    public boolean isNumber(final String str) {
+    private List<InlineKeyboardButton> addColumn(String name, String id) {
+        List<InlineKeyboardButton> columns = new ArrayList<>();
+        columns.add(new InlineKeyboardButton().setText(name).setCallbackData(id));
+        return columns;
+    }
+
+    private boolean isNumber(final String str) {
         try {
             Integer.parseInt(str);
             return true;
