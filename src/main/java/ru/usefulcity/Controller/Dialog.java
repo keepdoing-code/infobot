@@ -24,7 +24,6 @@ public class Dialog {
     Logger log = LoggerFactory.getLogger(Dialog.class);
     private Menu rootMenu;
     private Menu currentMenu;
-    private Menu selectedItem;
     private EditMessageText editMessage = new EditMessageText().setText("");
 
 
@@ -33,17 +32,18 @@ public class Dialog {
         this.rootMenu = rootMenu;
     }
 
+    public void updateRootMenu(Menu updatedMenu){
+        this.currentMenu = updatedMenu;
+        this.rootMenu = updatedMenu;
+    }
+
 
     public boolean processItem(String itemId) {
-        if (isNumber(itemId)) {
-            int i = Integer.parseInt(itemId);
-            selectedItem = currentMenu.getSubmenu(i);
-            log.info("Input : {}, curr: {} {}", itemId, currentMenu.getName(), currentMenu.getId());
+        log.info("Input: {}",itemId);
 
-            if (selectedItem != null) {
-                log.info(" selected: {} {}", selectedItem.getName(), selectedItem.getId());
-                currentMenu = selectedItem; //if not card than set submenu as current
-            }
+        if (isNumber(itemId)) {
+            currentMenu = currentMenu.getSubmenu(Integer.parseInt(itemId));
+
         } else {
             switch (itemId) {
                 case GO_BACK_ID:
@@ -61,13 +61,11 @@ public class Dialog {
 
     public EditMessageText getEditMessage() {
         if (currentMenu.haveCard()) {
-            editMessage.setText(currentMenu.getCard().getText());
-        } else {
-            editMessage.setText(currentMenu.getName());
+            return editMessage.setText(currentMenu.getCard().getText());
         }
-
-        return editMessage;
+        return editMessage.setText(currentMenu.getName());
     }
+
 
     public InlineKeyboardMarkup getMenuItems() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -85,7 +83,6 @@ public class Dialog {
             rows.add(addColumn(GO_BACK, GO_BACK_ID));
         }
 
-
         inlineKeyboardMarkup.setKeyboard(rows);
         return inlineKeyboardMarkup;
     }
@@ -96,6 +93,7 @@ public class Dialog {
         columns.add(new InlineKeyboardButton().setText(name).setCallbackData(id));
         return columns;
     }
+
 
     private boolean isNumber(final String str) {
         try {

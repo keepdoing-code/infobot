@@ -27,6 +27,9 @@ public class Menu implements Iterable<Menu> {
     }
 
     public Menu getSubmenu(int menuId) {
+        if (items.get(menuId) == null) {
+            return this;
+        }
         return items.get(menuId);
     }
 

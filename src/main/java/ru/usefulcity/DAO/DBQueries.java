@@ -1,4 +1,4 @@
-package ru.usefulcity.Controller;
+package ru.usefulcity.DAO;
 
 import java.util.ArrayList;
 

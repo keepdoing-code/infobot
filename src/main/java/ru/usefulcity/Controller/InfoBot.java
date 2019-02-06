@@ -9,7 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.usefulcity.BotSettings;
-import ru.usefulcity.Log;
 import ru.usefulcity.Model.Menu;
 
 import java.util.HashMap;
@@ -32,12 +31,14 @@ public class InfoBot extends TelegramLongPollingBot {
         this.menu = menu;
     }
 
+
+    /**
+     * All bot functions processed here.
+     * Process callback query with selected menu item.
+     */
     @Override
     public void onUpdateReceived(Update update) {
-        /**
-         * All bot functions processed here.
-         * Process callback query with selected menu item.
-         */
+
         if (update.hasCallbackQuery()) {
             String callbackData = update.getCallbackQuery().getData();
             long msgId = update.getCallbackQuery().getMessage().getMessageId();
@@ -46,8 +47,7 @@ public class InfoBot extends TelegramLongPollingBot {
 
 
             if (dialog == null) {
-                dialog = new Dialog(menu);
-                dialogList.put(chatId, dialog);
+                dialog = newDialog(chatId);
             }
 
             dialog.processItem(callbackData);
@@ -64,6 +64,7 @@ public class InfoBot extends TelegramLongPollingBot {
             long chatId = update.getMessage().getChatId();
             String messageText = update.getMessage().getText();
             String user = update.getMessage().getChat().getUserName(); //this only for logger
+            log.info("User: {}", user);
 
             if (!dialogList.containsKey(chatId) || "/start".equals(messageText)) {
                 newDialog(chatId);
@@ -75,18 +76,26 @@ public class InfoBot extends TelegramLongPollingBot {
         }
     }
 
-
-    private void newDialog(long chatId) {
+    /**
+     * If new user connected we create Dialog instance to store his position in menu.
+     * First of all we send him Main menu.
+     * @param chatId - new user id
+     */
+    private Dialog newDialog(long chatId) {
         Dialog dialog = new Dialog(menu);
         dialogList.put(chatId, dialog);
         sendMessage(chatId, MAIN_MENU, dialog.getMenuItems());
+        return dialog;
     }
 
 
     /**
-     * Here we send update menu according to user choice
+     * Here we send updated menu according to user choice of previous menu item
      *
-     * @param editText - submenu or root menu
+     * @param chatId - Concrete chat with user
+     * @param message_id - message to update
+     * @param editText - new text to update message
+     * @param inlineKeyboard - submenu or parent menu according selected item
      */
     private void sendMessage(long chatId, long message_id, EditMessageText editText, InlineKeyboardMarkup inlineKeyboard) {
         editText
@@ -125,13 +134,22 @@ public class InfoBot extends TelegramLongPollingBot {
         }
     }
 
-
+    /**
+     * Standard method for this Telegram bot API that uses bot token
+     *
+     * @return
+     */
     @Override
     public String getBotToken() {
         return BotSettings.BOT_TOKEN;
     }
 
 
+    /**
+     * Standard method for this Telegram bot API that uses bot username
+     *
+     * @return
+     */
     @Override
     public String getBotUsername() {
         return BotSettings.BOT_USERNAME;
