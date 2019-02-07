@@ -1,9 +1,12 @@
 package ru.usefulcity.DAO;
 
-import java.util.ArrayList;
-
-public class DBQueries {
-    private final DBWorker dbWorker;
+/**
+ * Created on 07/02/19.
+ *
+ * @author Yuri Lupandin
+ * @version 1.0
+ */
+public class SQLQueries {
     public static final String PRAGMA_FOREIGN_KEYS_ON = "PRAGMA foreign_keys = ON;";
     public static final String ADD_ROOT_MENU = "INSERT INTO menu(name, root_id) VALUES (?, 0);";
     public static final String ADD_SUBMENU = "INSERT INTO menu(name, root_id) VALUES (?, ?);";
@@ -24,7 +27,7 @@ public class DBQueries {
                     "root_id INTEGER, " +
                     "name text);" +
 
-            "CREATE TABLE if not exists cards (" +
+                    "CREATE TABLE if not exists cards (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "menu_id INTEGER," +
                     "name TEXT," +
@@ -35,60 +38,4 @@ public class DBQueries {
                     "pic TEXT, " +
                     "rating INTEGER," +
                     "FOREIGN KEY(menu_id) REFERENCES menu(id) ON DELETE CASCADE);";
-
-
-    public DBQueries(String dbFilename) {
-        this.dbWorker = new DBWorker(dbFilename);
-    }
-
-    public void settingUp() {
-        dbWorker.exec(PRAGMA_FOREIGN_KEYS_ON);
-    }
-
-    public void createTables() {
-        dbWorker.execUpdate(CREATE_TABLES_QUERY);
-    }
-
-    public void dropTables() {
-        dbWorker.execUpdate(DROP_TABLES_QUERY);
-    }
-
-    public void addRootMenu(String itemName) {
-        dbWorker.prepExec(ADD_ROOT_MENU, itemName);
-    }
-
-    public void addSubMenu(String itemName, int rootMenuId) {
-        dbWorker.prepExec(ADD_SUBMENU, itemName, rootMenuId);
-    }
-
-//    public void addCard(CardDB cardDB) {
-//        dbWorker.prepExec(ADD_CARD, cardDB.getAsArray());
-//    }
-
-    public void removeMenu(int menuId) {
-        dbWorker.prepExec(REMOVE_MENU, menuId, menuId);
-    }
-
-    public void removeCard(int cardId) {
-        dbWorker.prepExec(REMOVE_CARD, cardId);
-    }
-
-    public ArrayList<Object[]> getCards(int menuId) {
-        return dbWorker.prepExecMany(GET_CARDS, menuId);
-    }
-
-    public ArrayList<Object[]> getMenu(int rootMenuId) {
-        return dbWorker.prepExecMany(GET_MENU, rootMenuId);
-    }
-
-    public ArrayList<Object[]> getData(String query) {
-        return dbWorker.execMany(query);
-    }
-
-    public ArrayList<Object[]> getDataParam(final String query, Object ... params) {
-        return dbWorker.prepExecMany(query, params);
-    }
-
-
-
 }

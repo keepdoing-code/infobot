@@ -1,31 +1,55 @@
 package ru.usefulcity.DAO;
 
+import ru.usefulcity.DAO.Interface.IDBConnection;
 import ru.usefulcity.Log;
 
 import java.sql.*;
 import java.util.ArrayList;
 
-public class DBWorker {
+/**
+ * Created on 07/02/19.
+ *
+ * @author Yuri Lupandin
+ * @version 1.0
+ */
 
-    private final String filename;
+public class DBConnection  implements IDBConnection {
+    private Connection connection = null;
 
-    DBWorker(String file) {
-        this.filename = file;
+    private String connectionString = "jdbc:sqlite:infobot.db";
+
+
+    public DBConnection() {
     }
 
-    public int prepExec(final String query, final Object ... params) {
+    public DBConnection(String connectionString) {
+        this.connectionString = connectionString;
+    }
+
+    @Override
+    public void initConnection() throws SQLException {
+        connection = DriverManager.getConnection(connectionString);
+
+    }
+
+    @Override
+    public void closeConnection(Connection connection) throws SQLException {
+        if (connection != null)
+            connection.close();
+    }
+
+    @Override
+    public int prepExec(String query, Object... params) {
         int status = -1;
         try {
-            Connection cn = this.connect();
-            PreparedStatement ps = cn.prepareStatement(query);
+            PreparedStatement ps = connection.prepareStatement(query);
 
             for (int i = 0; i < params.length; i++) {
                 ps.setObject(i + 1, params[i]);
             }
 
             status = ps.executeUpdate();
-            Log.out(query + "  " + status);
-            closeConnection(cn);
+            ps.close();
         } catch (SQLException e) {
             Log.out(e.getMessage());
             System.err.println(e.getMessage());
@@ -33,10 +57,11 @@ public class DBWorker {
         return status;
     }
 
-    public ArrayList<Object[]> prepExecMany(String query, final Object ... params) {
+    @Override
+    public ArrayList<Object[]> prepExecMany(String query, Object... params) {
         try {
-            Connection cn = this.connect();
-            PreparedStatement ps = cn.prepareStatement(query);
+
+            PreparedStatement ps = connection.prepareStatement(query);
 
             for (int i = 0; i < params.length; i++) {
                 ps.setObject(i + 1, params[i]);
@@ -61,7 +86,7 @@ public class DBWorker {
                 data.add(obj);
             }
 
-            closeConnection(cn);
+            ps.close();
             return data;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -69,40 +94,35 @@ public class DBWorker {
         return null;
     }
 
+    @Override
     public void exec(String query) {
         try {
-            Connection cn = this.connect();
-            Statement st = cn.createStatement();
+
+            Statement st = connection.createStatement();
             st.setQueryTimeout(30);
             boolean status = st.execute(query);
-
-            Log.out(query + "  " + status);
-
-            this.closeConnection(cn);
+            st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    @Override
     public void execUpdate(String query) {
         try {
-            Connection cn = this.connect();
-            Statement st = cn.createStatement();
+            Statement st = connection.createStatement();
             st.setQueryTimeout(30);
-
             int status = st.executeUpdate(query);
-            Log.out(query + "  " + status);
-
-            closeConnection(cn);
+            st.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    @Override
     public ArrayList<Object[]> execMany(String query) {
         try {
-            Connection cn = this.connect();
-            Statement st = cn.createStatement();
+            Statement st = connection.createStatement();
             st.setQueryTimeout(30);
             ResultSet rs = st.executeQuery(query);
             final int columnCount = rs.getMetaData().getColumnCount();
@@ -123,24 +143,11 @@ public class DBWorker {
                 data.add(obj);
             }
 
-            closeConnection(cn);
+            st.close();
             return data;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
-
-    private Connection connect() throws SQLException {
-        Connection con;
-        String connectionString = "jdbc:sqlite:";
-        con = DriverManager.getConnection(connectionString + filename);
-        return con;
-    }
-
-    private void closeConnection(Connection cn) throws SQLException {
-        if (cn != null)
-            cn.close();
-    }
-
 }

@@ -8,6 +8,9 @@ import ru.usefulcity.Model.Card;
 import ru.usefulcity.Model.Menu;
 
 public class App {
+
+
+
     public static void main(String[] args) {
         ApiContextInitializer.init();
         TelegramBotsApi botsApi = new TelegramBotsApi();
