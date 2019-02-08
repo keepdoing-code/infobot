@@ -3,12 +3,10 @@ package ru.usefulcity;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.LongPollingBot;
 import ru.usefulcity.Controller.InfoBot;
-import ru.usefulcity.DAO.SQLQueries;
-import ru.usefulcity.Model.Card;
+import ru.usefulcity.DAO.ConnectionFacade;
+import ru.usefulcity.DAO.MenuDAO;
 import ru.usefulcity.Model.Menu;
-import ru.usefulcity.Model.MenuLoader;
 
 public class App {
 
@@ -16,15 +14,17 @@ public class App {
         ApiContextInitializer.init();
         TelegramBotsApi botsApi = new TelegramBotsApi();
 
-        Menu menu = MenuLoader.createMenu();
-        System.out.println(MenuLoader.printAllMenu(menu, "\t"));
+//        Menu menu = MenuLoader.addItem();
+        MenuDAO menuDAO = new MenuDAO();
+        menuDAO.init(new ConnectionFacade());
+        Menu menu = menuDAO.loadMenu();
 
-//        try {
-//            botsApi.registerBot(new InfoBot(menu));
-//
-//        } catch (TelegramApiException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            botsApi.registerBot(new InfoBot(menu));
+
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
 
         Log.out("Bot successfully started");
     }

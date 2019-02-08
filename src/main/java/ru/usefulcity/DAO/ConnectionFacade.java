@@ -1,6 +1,6 @@
 package ru.usefulcity.DAO;
 
-import ru.usefulcity.DAO.Interface.IDBFacade;
+import ru.usefulcity.DAO.Interface.IConnectionFacade;
 import ru.usefulcity.Log;
 
 import java.sql.*;
@@ -14,16 +14,16 @@ import java.util.List;
  * @version 1.0
  */
 
-public class DBFacade implements IDBFacade {
-    private final boolean TABLE_TITLE = false;
+public class ConnectionFacade implements IConnectionFacade {
+    private final boolean SHOW_TABLE_HEAD = false;
     private Connection connection = null;
     private String connectionString = "jdbc:sqlite:infobot.db";
 
 
-    public DBFacade() {
+    public ConnectionFacade() {
     }
 
-    public DBFacade(String connectionString) {
+    public ConnectionFacade(String connectionString) {
         this.connectionString = connectionString;
     }
 
@@ -36,23 +36,6 @@ public class DBFacade implements IDBFacade {
     public void closeConnection() throws SQLException {
         if (connection != null)
             connection.close();
-    }
-
-    public int insertOneGetId(String query, Object... params) {
-        int result = 0;
-        try {
-            PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            ps = setParams(ps, params);
-            ps.executeUpdate();
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                result = rs.getInt(1);
-            }
-            ps.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 
     @Override
@@ -99,14 +82,14 @@ public class DBFacade implements IDBFacade {
     }
 
     @Override
-    public ArrayList<Object[]> getMany(String query) {
+    public ArrayList<String[]> getMany(String query) {
         try {
-            ArrayList<Object[]> data = new ArrayList<>();
             Statement st = connection.createStatement();
             st.setQueryTimeout(30);
             ResultSet rs = st.executeQuery(query);
-            data.add(getHead(rs));
-            data.addAll(getData(rs));
+            ArrayList<String[]> data = new ArrayList<>();
+            setHead(data, rs);
+            setData(data, rs);
             st.close();
             return data;
         } catch (SQLException e) {
@@ -116,15 +99,14 @@ public class DBFacade implements IDBFacade {
     }
 
     @Override
-    public ArrayList<Object[]> getManyPrepared(String query, Object... params) {
+    public ArrayList<String[]> getManyPrepared(String query, Object... params) {
         try {
             PreparedStatement ps = connection.prepareStatement(query);
             ps = setParams(ps, params);
             ResultSet rs = ps.executeQuery();
-            Object[] head = getHead(rs);
-            ArrayList<Object[]> data = new ArrayList<>();
-            data.add(head);
-            data.addAll(getData(rs));
+            ArrayList<String[]> data = new ArrayList<>();
+            setHead(data, rs);
+            setData(data, rs);
             ps.close();
             return data;
         } catch (SQLException e) {
@@ -133,28 +115,43 @@ public class DBFacade implements IDBFacade {
         return null;
     }
 
-
-    private List<Object[]> getData(ResultSet rs) throws SQLException {
-        ArrayList<Object[]> data = new ArrayList<>();
+    private void setData(List<String[]> data, ResultSet rs) throws SQLException {
         final int columnCount = rs.getMetaData().getColumnCount();
         while (rs.next()) {
-            Object[] obj = new Object[columnCount];
+            String[] obj = new String[columnCount];
             for (int i = 1; i <= columnCount; i++) {
-                obj[i - 1] = rs.getObject(i);
+                obj[i - 1] = rs.getString(i);
             }
             data.add(obj);
         }
-        return data;
     }
 
-    private Object[] getHead(ResultSet rs) throws SQLException {
-        final int columnCount = rs.getMetaData().getColumnCount();
 
-        Object[] head = new Object[columnCount];
+    public int insertOneGetId(String query, Object... params) {
+        int result = 0;
+        try {
+            PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            ps = setParams(ps, params);
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                result = rs.getInt(1);
+            }
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private void setHead(List<String[]> data, ResultSet rs) throws SQLException {
+        if (!SHOW_TABLE_HEAD) return;
+        final int columnCount = rs.getMetaData().getColumnCount();
+        String[] head = new String[columnCount];
         for (int i = 0; i < columnCount; i++) {
             head[i] = rs.getMetaData().getColumnName(i + 1);
         }
-        return head;
+        data.add(head);
     }
 
     private PreparedStatement setParams(PreparedStatement ps, Object... params) throws SQLException {

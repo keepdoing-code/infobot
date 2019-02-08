@@ -1,4 +1,7 @@
-package ru.usefulcity.Model;
+package ru.usefulcity.Helpers;
+
+import ru.usefulcity.Model.Card;
+import ru.usefulcity.Model.Menu;
 
 /**
  * Created on 08/02/19.
@@ -7,6 +10,7 @@ package ru.usefulcity.Model;
  * @version 1.0
  */
 public class MenuLoader {
+
 
     public static Menu createMenu() {
         Card card1 = new Card("Yuri").

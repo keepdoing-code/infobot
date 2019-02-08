@@ -34,7 +34,8 @@ public class SQLQueries {
     public static final String GET_ALL_MENU = "SELECT * FROM menu ORDER BY parent_id;";
     public static final String GET_CARDS = "SELECT text FROM cards WHERE menu_id = ?;";
 
-    public static final String GET_MENU = "SELECT name FROM menu WHERE parent_id = ?;";
+    public static final String GET_MENU = "SELECT name FROM menu WHERE id = ?;";
+    public static final String GET_PARENT_ID = "SELECT parent_id FROM menu WHERE id = ?;";
 
     public static final String DISTINCT_PARENT = "select distinct parent_id from menu order by parent_id asc";
     public static final String GET_CHILDREN = "select * from menu where parent_id = ?";

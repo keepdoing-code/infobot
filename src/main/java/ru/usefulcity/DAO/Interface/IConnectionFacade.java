@@ -9,16 +9,16 @@ import java.util.ArrayList;
  * @author Yuri Lupandin
  * @version 1.0
  */
-public interface IDBFacade {
+public interface IConnectionFacade {
     int execPrepared(final String query, final Object... params);
 
-    ArrayList<Object[]> getManyPrepared(String query, final Object... params);
+    ArrayList<String[]> getManyPrepared(String query, final Object... params);
 
     boolean exec(String query);
 
     int execUpdate(String query);
 
-    ArrayList<Object[]> getMany(String query);
+    ArrayList<String[]> getMany(String query);
 
     void initConnection() throws SQLException;
 

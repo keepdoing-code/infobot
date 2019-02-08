@@ -16,11 +16,9 @@ public interface IMenuDAO {
      *
      * @param connection
      */
-    void init(IDBFacade connection);
+    void init(IConnectionFacade connection);
 
     void createMenu(String name, Menu parent);
-
-    void addItem(String name, Menu menu);
 
     void addItem(String name, int parentId);
 
@@ -28,7 +26,7 @@ public interface IMenuDAO {
 
     void deleteCard(Card card);
 
-    Menu getMenu();
+    Menu loadMenu();
 
     void updateItem(Menu menuItem);
 
