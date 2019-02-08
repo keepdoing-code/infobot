@@ -12,5 +12,5 @@ public class Constants {
     public static final String NEW_LINE = "\r\n";
     public static final String GO_BACK = "Go back";
     public static final String GO_BACK_ID = "b";
-    public static final String MAIN_MENU_ID = "m";
+    public static final String MAIN_MENU_ID = "1";
 }

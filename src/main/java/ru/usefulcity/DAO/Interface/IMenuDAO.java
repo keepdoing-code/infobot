@@ -1,5 +1,5 @@
 package ru.usefulcity.DAO.Interface;
-import ru.usefulcity.DAO.DBConnection;
+import ru.usefulcity.Model.Card;
 import ru.usefulcity.Model.Menu;
 
 /**
@@ -16,14 +16,22 @@ public interface IMenuDAO {
      *
      * @param connection
      */
-    void init(DBConnection connection);
-
-    void createMenu(String name);
+    void init(IDBFacade connection);
 
     void createMenu(String name, Menu parent);
 
     void addItem(String name, Menu menu);
 
-    void addCard(String text, Menu item);
+    void addItem(String name, int parentId);
+
+    void addCard(Card card, Menu item);
+
+    void deleteCard(Card card);
+
+    Menu getMenu();
+
+    void updateItem(Menu menuItem);
+
+    void deleteItem(Menu menuItem);
 
 }

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import ru.usefulcity.Model.Card;
 import ru.usefulcity.Model.Menu;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class Dialog {
     }
 
 
-    public boolean processItem(String itemId) {
+    public boolean processUpdate(String itemId) {
         log.info("Input: {}",itemId);
 
         if (isNumber(itemId)) {
@@ -61,7 +62,12 @@ public class Dialog {
 
     public EditMessageText getEditMessage() {
         if (currentMenu.haveCard()) {
-            return editMessage.setText(currentMenu.getCard().getText());
+            StringBuilder sb = new StringBuilder();
+            for(Card c: currentMenu.getCard()) {
+                sb.append(c.getName()).append(NEW_LINE)
+                        .append(c.getText());
+            }
+            return editMessage.setText(sb.toString());
         }
         return editMessage.setText(currentMenu.getName());
     }

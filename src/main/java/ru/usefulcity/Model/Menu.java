@@ -6,9 +6,14 @@ public class Menu implements Iterable<Menu> {
     private static int uniqueID = 0;
     private final String name;
     private Menu parentMenu = null;
-    private Card card = null;
+    private List<Card> cards = new ArrayList<>();
     private int id = -1;
     private Map<Integer, Menu> items = new HashMap<>();
+
+    public Menu(String name, int menuId){
+        this.name = name;
+        this.id = menuId;
+    }
 
     public Menu(String name) {
         this.name = name;
@@ -17,7 +22,7 @@ public class Menu implements Iterable<Menu> {
 
     public Menu(Card card) {
         this(card.getName());
-        this.setCard(card);
+        this.addCard(card);
     }
 
     public void addSubmenu(Menu item) {
@@ -42,11 +47,11 @@ public class Menu implements Iterable<Menu> {
     }
 
     public boolean haveCard() {
-        return card != null;
+        return cards.size() != 0;
     }
 
-    public Card getCard() {
-        return this.card;
+    public List<Card> getCard() {
+        return this.cards;
     }
 
     public String getName() {
@@ -62,8 +67,8 @@ public class Menu implements Iterable<Menu> {
         this.parentMenu = upMenu;
     }
 
-    private void setCard(Card card) {
-        this.card = card;
+    private void addCard(Card card) {
+        this.cards.add(card);
     }
 
     private void setUniqueId() {

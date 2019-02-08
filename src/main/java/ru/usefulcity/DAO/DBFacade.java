@@ -1,0 +1,166 @@
+package ru.usefulcity.DAO;
+
+import ru.usefulcity.DAO.Interface.IDBFacade;
+import ru.usefulcity.Log;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created on 07/02/19.
+ *
+ * @author Yuri Lupandin
+ * @version 1.0
+ */
+
+public class DBFacade implements IDBFacade {
+    private final boolean TABLE_TITLE = false;
+    private Connection connection = null;
+    private String connectionString = "jdbc:sqlite:infobot.db";
+
+
+    public DBFacade() {
+    }
+
+    public DBFacade(String connectionString) {
+        this.connectionString = connectionString;
+    }
+
+    @Override
+    public void initConnection() throws SQLException {
+        connection = DriverManager.getConnection(connectionString);
+    }
+
+    @Override
+    public void closeConnection() throws SQLException {
+        if (connection != null)
+            connection.close();
+    }
+
+    public int insertOneGetId(String query, Object... params) {
+        int result = 0;
+        try {
+            PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            ps = setParams(ps, params);
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                result = rs.getInt(1);
+            }
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public boolean exec(String query) {
+        boolean status = false;
+        try {
+            Statement st = connection.createStatement();
+            st.setQueryTimeout(30);
+            status = st.execute(query);
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return status;
+    }
+
+    @Override
+    public int execUpdate(String query) {
+        int status = -1;
+        try {
+            Statement st = connection.createStatement();
+            st.setQueryTimeout(30);
+            status = st.executeUpdate(query);
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return status;
+    }
+
+    @Override
+    public int execPrepared(String query, Object... params) {
+        int status = -1;
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps = setParams(ps, params);
+            status = ps.executeUpdate();
+            ps.close();
+        } catch (SQLException e) {
+            Log.out(e.getMessage());
+            System.err.println(e.getMessage());
+        }
+        return status;
+    }
+
+    @Override
+    public ArrayList<Object[]> getMany(String query) {
+        try {
+            ArrayList<Object[]> data = new ArrayList<>();
+            Statement st = connection.createStatement();
+            st.setQueryTimeout(30);
+            ResultSet rs = st.executeQuery(query);
+            data.add(getHead(rs));
+            data.addAll(getData(rs));
+            st.close();
+            return data;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public ArrayList<Object[]> getManyPrepared(String query, Object... params) {
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps = setParams(ps, params);
+            ResultSet rs = ps.executeQuery();
+            Object[] head = getHead(rs);
+            ArrayList<Object[]> data = new ArrayList<>();
+            data.add(head);
+            data.addAll(getData(rs));
+            ps.close();
+            return data;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    private List<Object[]> getData(ResultSet rs) throws SQLException {
+        ArrayList<Object[]> data = new ArrayList<>();
+        final int columnCount = rs.getMetaData().getColumnCount();
+        while (rs.next()) {
+            Object[] obj = new Object[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                obj[i - 1] = rs.getObject(i);
+            }
+            data.add(obj);
+        }
+        return data;
+    }
+
+    private Object[] getHead(ResultSet rs) throws SQLException {
+        final int columnCount = rs.getMetaData().getColumnCount();
+
+        Object[] head = new Object[columnCount];
+        for (int i = 0; i < columnCount; i++) {
+            head[i] = rs.getMetaData().getColumnName(i + 1);
+        }
+        return head;
+    }
+
+    private PreparedStatement setParams(PreparedStatement ps, Object... params) throws SQLException {
+        for (int i = 0; i < params.length; i++) {
+            ps.setObject(i + 1, params[i]);
+        }
+        return ps;
+    }
+}

@@ -50,7 +50,7 @@ public class InfoBot extends TelegramLongPollingBot {
                 dialog = newDialog(chatId);
             }
 
-            dialog.processItem(callbackData);
+            dialog.processUpdate(callbackData);
             EditMessageText editMessageText = dialog.getEditMessage();
             InlineKeyboardMarkup inlineKeyboardMarkup = dialog.getMenuItems();
             sendMessage(chatId, msgId, editMessageText, inlineKeyboardMarkup);
