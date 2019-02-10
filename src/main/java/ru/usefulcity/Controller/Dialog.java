@@ -49,9 +49,11 @@ public class Dialog {
                 case GO_BACK_CMD:
                     if (currentMenu.haveParent()) {
                         currentMenu = currentMenu.getParent();
+                        break;
                     }
                 case MAIN_MENU_CMD:
                     currentMenu = rootMenu;
+                    break;
                 default:
                     return false;
             }
