@@ -8,13 +8,13 @@ public class Card {
         this.name = name;
     }
 
-    public Card add(String str) {
+    public Card addText(String str) {
         text = text + str + "\r\n";
         return this;
     }
 
     public String getText() {
-        return name + "\r\n" + text;
+        return text;
     }
 
     public String getName() {

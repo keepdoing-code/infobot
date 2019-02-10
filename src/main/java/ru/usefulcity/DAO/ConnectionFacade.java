@@ -115,18 +115,7 @@ public class ConnectionFacade implements IConnectionFacade {
         return null;
     }
 
-    private void setData(List<String[]> data, ResultSet rs) throws SQLException {
-        final int columnCount = rs.getMetaData().getColumnCount();
-        while (rs.next()) {
-            String[] obj = new String[columnCount];
-            for (int i = 1; i <= columnCount; i++) {
-                obj[i - 1] = rs.getString(i);
-            }
-            data.add(obj);
-        }
-    }
-
-
+    @Override
     public int insertOneGetId(String query, Object... params) {
         int result = 0;
         try {
@@ -142,6 +131,18 @@ public class ConnectionFacade implements IConnectionFacade {
             e.printStackTrace();
         }
         return result;
+    }
+
+
+    private void setData(List<String[]> data, ResultSet rs) throws SQLException {
+        final int columnCount = rs.getMetaData().getColumnCount();
+        while (rs.next()) {
+            String[] obj = new String[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                obj[i - 1] = rs.getString(i);
+            }
+            data.add(obj);
+        }
     }
 
     private void setHead(List<String[]> data, ResultSet rs) throws SQLException {

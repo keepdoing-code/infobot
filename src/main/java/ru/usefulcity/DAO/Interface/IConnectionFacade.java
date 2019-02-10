@@ -23,4 +23,6 @@ public interface IConnectionFacade {
     void initConnection() throws SQLException;
 
     void closeConnection() throws SQLException;
+
+    int insertOneGetId(String query, Object... params);
 }

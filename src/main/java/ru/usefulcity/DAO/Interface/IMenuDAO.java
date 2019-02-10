@@ -2,6 +2,8 @@ package ru.usefulcity.DAO.Interface;
 import ru.usefulcity.Model.Card;
 import ru.usefulcity.Model.Menu;
 
+import java.util.List;
+
 /**
  * Created on 07/02/19.
  *
@@ -18,11 +20,11 @@ public interface IMenuDAO {
      */
     void init(IConnectionFacade connection);
 
-    void createMenu(String name, Menu parent);
+    int addSubmenu(String name, int parentId);
 
-    void addItem(String name, int parentId);
+    void saveMenu(Menu menu);
 
-    void addCard(Card card, Menu item);
+    void writeCards(List<Card> cards, int menuId);
 
     void deleteCard(Card card);
 

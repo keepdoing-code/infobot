@@ -20,9 +20,9 @@ public class Menu implements Iterable<Menu> {
         this.setUniqueId();
     }
 
-    public Menu(Card card) {
-        this(card.getName());
-        this.addCard(card);
+    public Menu(String menuName, Card card) {
+        this.name = menuName;
+        this.cards.add(card);
     }
 
     public void addSubmenu(Menu item) {
@@ -50,7 +50,7 @@ public class Menu implements Iterable<Menu> {
         return cards.size() != 0;
     }
 
-    public List<Card> getCard() {
+    public List<Card> getCards() {
         return this.cards;
     }
 
@@ -62,13 +62,13 @@ public class Menu implements Iterable<Menu> {
         return String.valueOf(id);
     }
 
+    public void addCard(List<Card> cards) {
+        this.cards.addAll(cards);
+    }
+
 
     private void setParentMenu(Menu upMenu) {
         this.parentMenu = upMenu;
-    }
-
-    private void addCard(Card card) {
-        this.cards.add(card);
     }
 
     private void setUniqueId() {

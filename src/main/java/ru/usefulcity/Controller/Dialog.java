@@ -11,7 +11,6 @@ import ru.usefulcity.Model.Menu;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static ru.usefulcity.Controller.Constants.*;
 
@@ -47,11 +46,11 @@ public class Dialog {
 
         } else {
             switch (itemId) {
-                case GO_BACK_ID:
+                case GO_BACK_CMD:
                     if (currentMenu.haveParent()) {
                         currentMenu = currentMenu.getParent();
                     }
-                case MAIN_MENU_ID:
+                case MAIN_MENU_CMD:
                     currentMenu = rootMenu;
                 default:
                     return false;
@@ -63,7 +62,7 @@ public class Dialog {
     public EditMessageText getEditMessage() {
         if (currentMenu.haveCard()) {
             StringBuilder sb = new StringBuilder();
-            for(Card c: currentMenu.getCard()) {
+            for(Card c: currentMenu.getCards()) {
                 sb.append(c.getName()).append(NEW_LINE)
                         .append(c.getText());
             }
@@ -82,11 +81,11 @@ public class Dialog {
         }
 
         if (currentMenu.haveCard()) {
-            rows.add(addColumn(MAIN_MENU, MAIN_MENU_ID));
+            rows.add(addColumn(MAIN_MENU, MAIN_MENU_CMD));
         }
 
         if (currentMenu.haveParent()) {
-            rows.add(addColumn(GO_BACK, GO_BACK_ID));
+            rows.add(addColumn(GO_BACK, GO_BACK_CMD));
         }
 
         inlineKeyboardMarkup.setKeyboard(rows);

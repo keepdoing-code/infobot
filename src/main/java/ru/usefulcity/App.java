@@ -13,8 +13,7 @@ public class App {
     public static void main(String[] args) {
         ApiContextInitializer.init();
         TelegramBotsApi botsApi = new TelegramBotsApi();
-
-//        Menu menu = MenuLoader.addItem();
+        
         MenuDAO menuDAO = new MenuDAO();
         menuDAO.init(new ConnectionFacade());
         Menu menu = menuDAO.loadMenu();

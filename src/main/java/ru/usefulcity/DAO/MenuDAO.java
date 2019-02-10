@@ -39,19 +39,29 @@ public class MenuDAO implements IMenuDAO {
         }
     }
 
+    /**
+     * addSubmenu returns inserted item id
+     *
+     * @param name     - Name for inserted menu item
+     * @param parentId - Parent menu id for inserted menu item
+     * @return - return id of new record
+     */
     @Override
-    public void addItem(String name, int parentId) {
-        connectionFacade.execPrepared(ADD_SUBMENU, name, parentId);
+    public int addSubmenu(String name, int parentId) {
+        return connectionFacade.insertOneGetId(ADD_SUBMENU, name, parentId);
     }
 
     @Override
-    public void createMenu(String name, Menu parent) {
-        connectionFacade.execPrepared(ADD_SUBMENU, name, parent.getId());
+    public void saveMenu(Menu menu) {
+        dropTables();
+        saveMenuRecursive(menu, 0);
     }
 
     @Override
-    public void addCard(Card card, Menu item) {
-
+    public void writeCards(List<Card> cards, int menuId) {
+        for (Card card : cards) {
+            connectionFacade.execPrepared(ADD_CARD, menuId, card.getName(), card.getText());
+        }
     }
 
     @Override
@@ -59,16 +69,15 @@ public class MenuDAO implements IMenuDAO {
 
     }
 
+    /**
+     * First of all get descent list of parent id's
+     * for each parent id get child items
+     * create every parent and recursively addText children
+     */
     @Override
     public Menu loadMenu() {
-        /**
-         * First of all get descent list of parent id's
-         * for each parent id get child items
-         * create every parent and recursively add children
-         *
-         */
-        Menu rootMenu = new Menu(MAIN_MENU, Integer.valueOf(MAIN_MENU_ID));
-        rootMenu = getChildren(rootMenu, connectionFacade, 0, "");
+        Menu rootMenu = new Menu(MAIN_MENU, 0);
+        rootMenu = loadMenuRecursive(rootMenu, connectionFacade, 0, "");
         return rootMenu;
     }
 
@@ -82,6 +91,16 @@ public class MenuDAO implements IMenuDAO {
 
     }
 
+    public List<Card> getCards(int id) {
+        List<String[]> data = connectionFacade.getManyPrepared(GET_CARDS, id);
+        List<Card> list = new ArrayList<>();
+        for (String[] item : data) {
+            Card card = new Card(item[0]).addText(item[1]);
+            list.add(card);
+        }
+        return list;
+    }
+
 
     public void debugPrint(List<String[]> list) {
         System.out.println();
@@ -90,18 +109,19 @@ public class MenuDAO implements IMenuDAO {
         }
     }
 
-    public void dropTables(){
+    public void dropTables() {
         try {
             connectionFacade.execUpdate(DROP_TABLES_QUERY);
             connectionFacade.initConnection();
             connectionFacade.execUpdate(CREATE_TABLES_QUERY);
             connectionFacade.exec(PRAGMA_FOREIGN_KEYS_ON);
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private static Menu getChildren(Menu parentMenu, IConnectionFacade connectionFacade, int parentId, String tab) {
+
+    private Menu loadMenuRecursive(Menu parentMenu, IConnectionFacade connectionFacade, int parentId, String tab) {
         ArrayList<String[]> list = connectionFacade.getManyPrepared(GET_CHILDREN, parentId);
 
         if (list.size() > 0) {
@@ -109,23 +129,38 @@ public class MenuDAO implements IMenuDAO {
                 int id = Integer.valueOf(obj[0]);
                 String menuName = MenuDAO.extractString(connectionFacade.getManyPrepared(GET_MENU, id));
                 Menu readMenu = new Menu(menuName, id);
+                readMenu.addCard(getCards(id));
                 parentMenu.addSubmenu(readMenu);
-                getChildren(readMenu, connectionFacade, id, tab + "\t");
                 System.out.println(tab + id + " : " + menuName);
+                loadMenuRecursive(readMenu, connectionFacade, id, tab + "\t");
             }
         }
         return parentMenu;
     }
 
-    public static String extractString(List<String[]> list){
-        if(list.size() > 0){
+
+    private void saveMenuRecursive(Menu menu, int parentId) {
+        for (Menu menuItem : menu) {
+            String name = menuItem.getName();
+            int id = this.addSubmenu(name, parentId);
+            this.writeCards(menuItem.getCards(), id);
+
+            if (menuItem.iterator().hasNext()) {
+                saveMenuRecursive(menuItem, id);
+            }
+        }
+    }
+
+
+    public static String extractString(List<String[]> list) {
+        if (list.size() > 0) {
             return list.get(0)[0];
         }
         return "EMPTY";
     }
 
-    public static int extractInt(List<String[]> list){
-        if(list.size() > 0){
+    public static int extractInt(List<String[]> list) {
+        if (list.size() > 0) {
             int i = Integer.valueOf(list.get(0)[0]);
             return i;
         }
