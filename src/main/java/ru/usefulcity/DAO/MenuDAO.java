@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static ru.usefulcity.Controller.Constants.*;
 import static ru.usefulcity.DAO.SQLQueries.*;
+import static ru.usefulcity.Controller.Constants.*;
 
 /**
  * Created on 07/02/19.
@@ -48,25 +48,24 @@ public class MenuDAO implements IMenuDAO {
      */
     @Override
     public int addSubmenu(String name, int parentId) {
-        return connectionFacade.insertOneGetId(ADD_SUBMENU, name, parentId);
+        return connectionFacade.getIndexInserted(ADD_SUBMENU, name, parentId);
     }
 
     @Override
-    public void saveMenu(Menu menu) {
-        dropTables();
-        saveMenuRecursive(menu, 0);
-    }
-
-    @Override
-    public void writeCards(List<Card> cards, int menuId) {
+    public void addCards(List<Card> cards, int menuId) {
         for (Card card : cards) {
             connectionFacade.execPrepared(ADD_CARD, menuId, card.getName(), card.getText());
         }
     }
 
     @Override
-    public void deleteCard(Card card) {
+    public void updateCard(Card card, String newName, String newText) {
+        connectionFacade.execPrepared(UPDATE_CARD, newName, newText, card.getId());
+    }
 
+    @Override
+    public void removeCard(Card card) {
+        connectionFacade.execPrepared(REMOVE_CARD, card.getId());
     }
 
     /**
@@ -82,32 +81,38 @@ public class MenuDAO implements IMenuDAO {
     }
 
     @Override
-    public void updateItem(Menu menuItem) {
+    public void saveMenu(Menu menu) {
+        dropTables();
+        int id = connectionFacade.getIndexInserted(ADD_SUBMENU, menu.getName(), 0);
 
+        saveMenuRecursive(menu, id);
+    }
+
+    @Override
+    public void updateItem(Menu menuItem, String newName) {
+        connectionFacade.execPrepared(UPDATE_MENU_ITEM, newName, menuItem.getId());
     }
 
     @Override
     public void deleteItem(Menu menuItem) {
-
+        String id = menuItem.getId();
+        connectionFacade.execPrepared(REMOVE_MENU, id, id, id);
     }
 
+    @Override
     public List<Card> getCards(int id) {
         List<String[]> data = connectionFacade.getManyPrepared(GET_CARDS, id);
         List<Card> list = new ArrayList<>();
         for (String[] item : data) {
-            Card card = new Card(item[0]).addText(item[1]);
-            list.add(card);
+            String cardId = item[0];
+            String name = item[1];
+            String text = item[2];
+            list.add(new Card(name).addText(text).setId(cardId));
         }
         return list;
     }
 
 
-    public void debugPrint(List<String[]> list) {
-        System.out.println();
-        for (String[] objects : list) {
-            System.out.println(Arrays.toString(objects));
-        }
-    }
 
     public void dropTables() {
         try {
@@ -120,14 +125,13 @@ public class MenuDAO implements IMenuDAO {
         }
     }
 
-
     private Menu loadMenuRecursive(Menu parentMenu, IConnectionFacade connectionFacade, int parentId, String tab) {
         ArrayList<String[]> list = connectionFacade.getManyPrepared(GET_CHILDREN, parentId);
 
         if (list.size() > 0) {
             for (String[] obj : list) {
                 int id = Integer.valueOf(obj[0]);
-                String menuName = MenuDAO.extractString(connectionFacade.getManyPrepared(GET_MENU, id));
+                String menuName = connectionFacade.getOnePrepared(GET_MENU, id);
                 Menu readMenu = new Menu(menuName, id);
                 readMenu.addCard(getCards(id));
                 parentMenu.addSubmenu(readMenu);
@@ -138,12 +142,11 @@ public class MenuDAO implements IMenuDAO {
         return parentMenu;
     }
 
-
     private void saveMenuRecursive(Menu menu, int parentId) {
         for (Menu menuItem : menu) {
             String name = menuItem.getName();
             int id = this.addSubmenu(name, parentId);
-            this.writeCards(menuItem.getCards(), id);
+            this.addCards(menuItem.getCards(), id);
 
             if (menuItem.iterator().hasNext()) {
                 saveMenuRecursive(menuItem, id);
@@ -151,21 +154,10 @@ public class MenuDAO implements IMenuDAO {
         }
     }
 
-
-    public static String extractString(List<String[]> list) {
-        if (list.size() > 0) {
-            return list.get(0)[0];
+    public void debugPrint(List<String[]> list) {
+        System.out.println();
+        for (String[] objects : list) {
+            System.out.println(Arrays.toString(objects));
         }
-        return "EMPTY";
     }
-
-    public static int extractInt(List<String[]> list) {
-        if (list.size() > 0) {
-            int i = Integer.valueOf(list.get(0)[0]);
-            return i;
-        }
-        return -1;
-    }
-
-
 }

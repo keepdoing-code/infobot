@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import ru.usefulcity.Log;
 import ru.usefulcity.Model.Card;
 import ru.usefulcity.Model.Menu;
 
@@ -45,16 +46,28 @@ public class Dialog {
             currentMenu = currentMenu.getSubmenu(Integer.parseInt(itemId));
 
         } else {
+            Log.out("cur id: ",currentMenu.getId(), "cur name: ", currentMenu.getName());
+            Log.out("root id: ",rootMenu.getId(), "root name: ", rootMenu.getName());
+            Log.out("parent id: ",currentMenu.getParent().getId(), "parent name: ", currentMenu.getParent().getId());
+
+
             switch (itemId) {
                 case GO_BACK_CMD:
                     if (currentMenu.haveParent()) {
                         currentMenu = currentMenu.getParent();
                     }
+                    break;
                 case MAIN_MENU_CMD:
                     currentMenu = rootMenu;
+                    break;
                 default:
                     return false;
             }
+
+            Log.out("cur id: ",currentMenu.getId(), "cur name: ", currentMenu.getName());
+            Log.out("root id: ",rootMenu.getId(), "root name: ", rootMenu.getName());
+            Log.out("parent id: ",currentMenu.getParent().getId(), "parent name: ", currentMenu.getParent().getId());
+
         }
         return true;
     }

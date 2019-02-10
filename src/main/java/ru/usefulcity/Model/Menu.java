@@ -4,11 +4,12 @@ import java.util.*;
 
 public class Menu implements Iterable<Menu> {
     private static int uniqueID = 0;
-    private final String name;
-    private Menu parentMenu = null;
-    private List<Card> cards = new ArrayList<>();
     private int id = -1;
+    private Menu parentMenu = null;
+    private final String name;
+    private List<Card> cards = new ArrayList<>();
     private Map<Integer, Menu> items = new HashMap<>();
+
 
     public Menu(String name, int menuId){
         this.name = name;
@@ -21,8 +22,20 @@ public class Menu implements Iterable<Menu> {
     }
 
     public Menu(String menuName, Card card) {
-        this.name = menuName;
+        this(menuName);
         this.cards.add(card);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getId() {
+        return String.valueOf(id);
+    }
+
+    public List<Card> getCards() {
+        return this.cards;
     }
 
     public void addSubmenu(Menu item) {
@@ -46,25 +59,24 @@ public class Menu implements Iterable<Menu> {
         return parentMenu;
     }
 
+    public void addCard(List<Card> cards) {
+        this.cards.addAll(cards);
+    }
+
     public boolean haveCard() {
         return cards.size() != 0;
     }
 
-    public List<Card> getCards() {
-        return this.cards;
+    @Override
+    public Iterator<Menu> iterator() {
+        return items.values().iterator();
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public String toString() {
+        return toString(this,"");
     }
 
-    public String getId() {
-        return String.valueOf(id);
-    }
-
-    public void addCard(List<Card> cards) {
-        this.cards.addAll(cards);
-    }
 
 
     private void setParentMenu(Menu upMenu) {
@@ -78,8 +90,23 @@ public class Menu implements Iterable<Menu> {
         }
     }
 
-    @Override
-    public Iterator<Menu> iterator() {
-        return items.values().iterator();
+    private String toString(Menu menu, String tab) {
+        StringBuilder sb = new StringBuilder();
+
+        if (!menu.haveParent()) {
+            sb.append(menu.getId()).append(":").append("\t").append(menu.getName()).append("\r\n");
+        }
+
+        for (Menu m : menu) {
+            sb.append(tab).append(m.getId()).append(":").append("\t").append(m.getName()).append("\r\n");
+            if (m.haveCard()) {
+                for (Card c : m.getCards()) {
+                    sb.append(tab).append("\t").append(c.getName()).append("\r\n");
+                }
+            } else {
+                sb.append(toString(m, tab + '\t'));
+            }
+        }
+        return sb.toString();
     }
 }

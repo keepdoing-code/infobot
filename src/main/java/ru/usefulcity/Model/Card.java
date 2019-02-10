@@ -1,6 +1,7 @@
 package ru.usefulcity.Model;
 
 public class Card {
+    private int id = -1;
     private String name;
     private String text = "";
 
@@ -13,6 +14,11 @@ public class Card {
         return this;
     }
 
+    public Card setId(String id) {
+        this.id = Integer.valueOf(id);
+        return this;
+    }
+
     public String getText() {
         return text;
     }
@@ -20,4 +26,9 @@ public class Card {
     public String getName() {
         return name;
     }
+
+    public int getId() {
+        return id;
+    }
 }
+

@@ -24,5 +24,7 @@ public interface IConnectionFacade {
 
     void closeConnection() throws SQLException;
 
-    int insertOneGetId(String query, Object... params);
+    int getIndexInserted(String query, Object... params);
+
+    String getOnePrepared(String query, Object... params);
 }

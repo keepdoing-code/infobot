@@ -1,4 +1,5 @@
 package ru.usefulcity.DAO.Interface;
+
 import ru.usefulcity.Model.Card;
 import ru.usefulcity.Model.Menu;
 
@@ -22,16 +23,20 @@ public interface IMenuDAO {
 
     int addSubmenu(String name, int parentId);
 
-    void saveMenu(Menu menu);
-
-    void writeCards(List<Card> cards, int menuId);
-
-    void deleteCard(Card card);
-
-    Menu loadMenu();
-
-    void updateItem(Menu menuItem);
+    void updateItem(Menu menuItem, String newName);
 
     void deleteItem(Menu menuItem);
+
+    void addCards(List<Card> cards, int menuId);
+
+    void updateCard(Card card, String newName, String newText);
+
+    void removeCard(Card card);
+
+    List<Card> getCards(int id);
+
+    void saveMenu(Menu menu);
+
+    Menu loadMenu();
 
 }

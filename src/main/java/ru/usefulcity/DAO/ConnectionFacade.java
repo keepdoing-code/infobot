@@ -116,7 +116,7 @@ public class ConnectionFacade implements IConnectionFacade {
     }
 
     @Override
-    public int insertOneGetId(String query, Object... params) {
+    public int getIndexInserted(String query, Object... params) {
         int result = 0;
         try {
             PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -131,6 +131,12 @@ public class ConnectionFacade implements IConnectionFacade {
             e.printStackTrace();
         }
         return result;
+    }
+
+    @Override
+    public String getOnePrepared(String query, Object... params) {
+        List<String[]> data = getManyPrepared(query, params);
+        return data.get(0)[0];
     }
 
 
