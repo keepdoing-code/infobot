@@ -6,7 +6,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.usefulcity.Controller.InfoBot;
 import ru.usefulcity.DAO.ConnectionFacade;
 import ru.usefulcity.DAO.MenuDAO;
-import ru.usefulcity.Helpers.DBtest;
 import ru.usefulcity.Model.Menu;
 
 public class App {
@@ -18,7 +17,6 @@ public class App {
         MenuDAO menuDAO = new MenuDAO();
         menuDAO.init(new ConnectionFacade());
         Menu menu = menuDAO.loadMenu();
-        System.out.println("\r\n" + DBtest.printAllMenu(menu, ""));
 
         try {
             botsApi.registerBot(new InfoBot(menu));

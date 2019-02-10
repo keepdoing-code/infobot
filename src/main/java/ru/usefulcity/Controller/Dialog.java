@@ -65,10 +65,6 @@ public class Dialog {
                     return false;
             }
 
-            Log.out("cur id: ",currentMenu.getId(), "cur name: ", currentMenu.getName());
-            Log.out("root id: ",rootMenu.getId(), "root name: ", rootMenu.getName());
-            Log.out("parent id: ",currentMenu.getParent().getId(), "parent name: ", currentMenu.getParent().getId());
-
         }
         return true;
     }
