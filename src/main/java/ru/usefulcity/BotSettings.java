@@ -10,8 +10,9 @@ import java.util.Properties;
 /**
  * Created by yuri on 07.12.18.
  */
+
 public class BotSettings {
-    public static final String PATH_TO_PROPERTIES = "resources/botconfig.properties";
+    public static final String PATH_TO_PROPERTIES = "botconfig.properties";
     public static String BOT_USERNAME;
     public static String BOT_TOKEN;
     private static Logger log = LoggerFactory.getLogger(BotSettings.class);

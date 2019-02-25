@@ -75,6 +75,7 @@ public class MenuDAO implements IMenuDAO {
      */
     @Override
     public Menu loadMenu() {
+
         Menu rootMenu = new Menu(MAIN_MENU, 0);
         rootMenu = loadMenuRecursive(rootMenu, connectionFacade, 0, "");
         return rootMenu;
