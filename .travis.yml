@@ -7,7 +7,7 @@ jdk:
   - oraclejdk8
 
 before_deploy:
-  - ssh -o "StrictHostKeyChecking=no" $SERVER_URL "screen -S infobot -X quit"
+#  - ssh -o "StrictHostKeyChecking=no" $SERVER_URL "screen -S infobot -X quit"
 
 deploy:
   provider: script
@@ -16,4 +16,4 @@ deploy:
 
 after_deploy:
   - mvn org.codehaus.mojo:wagon-maven-plugin:1.0:upload -Dwagon.url=scp://$SERVER_URL -Dwagon.fromDir=standalone -Dwagon.includes=*.jar -Dwagon.toDir=/home/sa/deploy
-  - ssh -o "StrictHostKeyChecking=no" $SERVER_URL "screen -dmS infobot bash -c 'cd /home/sa/runningbot/; java -jar /home/sa/runningbot/infobot.jar'"
+#  - ssh -o "StrictHostKeyChecking=no" $SERVER_URL "screen -dmS infobot bash -c 'cd /home/sa/runningbot/; java -jar /home/sa/runningbot/infobot.jar'"
