@@ -6,8 +6,8 @@ addons:
   ssh_known_hosts: itcraft.su
 
 script:
-  - ssh sa:$SECURE@$SERVER_ADDR:$DEST_PATH touch ./test
-  - ssh sa:$SECURE@$SERVER_ADDR touch ./test
+  - apt-get install sshpass
+  - sshpass -p $SECURE ssh -o StrictHostKeyChecking=no sa@itcraft.su touch ./test
 
 
 deploy:
