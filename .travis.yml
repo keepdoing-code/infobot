@@ -5,6 +5,11 @@ jdk:
 addons:
   ssh_known_hosts: itcraft.su
 
+script:
+  - ssh sa:$SECURE@$SERVER_ADDR:$DEST_PATH touch ./test
+  - ssh sa:$SECURE@$SERVER_ADDR touch ./test
+
+
 deploy:
   provider: script
   script: mvn deploy
