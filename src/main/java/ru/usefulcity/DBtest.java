@@ -6,6 +6,7 @@ import ru.usefulcity.DAO.SQLQueries;
 import ru.usefulcity.Model.Card;
 import ru.usefulcity.Model.Menu;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 
 import static ru.usefulcity.DAO.SQLQueries.*;
@@ -18,16 +19,19 @@ import static ru.usefulcity.DAO.SQLQueries.*;
  */
 public class DBtest {
     public static void main(String[] args) {
-        ConnectionFacade connectionFacade = new ConnectionFacade("jdbc:sqlite:infobot.db");
-        MenuDAO menuDAO = new MenuDAO();
-        menuDAO.init(connectionFacade);
-        menuDAO.saveMenu(createTestMenu());
-//        writeTestData();
+//        ConnectionFacade connectionFacade = new ConnectionFacade("jdbc:sqlite:infobot.db");
+//        MenuDAO menuDAO = new MenuDAO();
+//        menuDAO.init(connectionFacade);
+//        menuDAO.saveMenu(createTestMenu());
+////        writeTestData();
+//
+//        Menu newMenu = menuDAO.loadMenu();
+//
+//        System.out.println("\r\n" + newMenu.toString() + "\r\n");
+//        menuDAO.debugPrint(connectionFacade.getMany(GET_ALL_MENU));
 
-        Menu newMenu = menuDAO.loadMenu();
-
-        System.out.println("\r\n" + newMenu.toString() + "\r\n");
-        menuDAO.debugPrint(connectionFacade.getMany(GET_ALL_MENU));
+        LocalDate date = LocalDate.of(2000, 1, 1);
+        System.out.println(date.toString());
     }
 
 
