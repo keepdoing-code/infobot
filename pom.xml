@@ -44,7 +44,7 @@
     <distributionManagement>
         <repository>
             <id>ssh-repository</id>
-            <url>scp://${env.SERVER_URL}</url>
+            <url>${env.SERVER_URL}</url>
         </repository>
     </distributionManagement>
 
