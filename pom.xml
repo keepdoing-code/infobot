@@ -41,15 +41,23 @@
     </dependencies>
 
 
-    <!--<distributionManagement>-->
-        <!--<repository>-->
-            <!--<id>ssh-repository</id>-->
-            <!--<url>scp://sa@itcraft.su</url>-->
-        <!--</repository>-->
-    <!--</distributionManagement>-->
+    <distributionManagement>
+        <repository>
+            <id>ssh-repository</id>
+            <url>scp://${env.SERVER_URL}</url>
+        </repository>
+    </distributionManagement>
 
 
     <build>
+        <extensions>
+            <!-- Enabling the use of SSH -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>3.0.0</version>
+            </extension>
+        </extensions>
 
         <plugins>
 
