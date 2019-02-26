@@ -25,7 +25,6 @@ public class App {
             e.printStackTrace();
         }
 
-
         Log.out("Bot successfully started");
     }
 }

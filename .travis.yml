@@ -2,6 +2,7 @@ language: java
 
 jdk:
   - oraclejdk8
+
 addons:
   ssh_known_hosts: itcraft.su
 
@@ -9,8 +10,7 @@ script:
   - sudo apt-get install sshpass
   - sshpass -p $SECURE scp -r $TRAVIS_BUILD_DIR/standalone/bot.jar sa@$SERVER_ADDR:/home/sa/deploy
   - sshpass -p $SECURE ssh -o StrictHostKeyChecking=no sa@$SERVER_ADDR screen -S infobot -X quit
-  - sshpass -p $SECURE ssh sa@$SERVER_ADDR screen -dmS infobot bash -c 'cd /home/sa/deploy/; java -jar /home/sa/deploy/bot.jar'
-
+  - sshpass -p $SECURE ssh sa@$SERVER_ADDR screen -dmS infobot bash -c 'java -jar /home/sa/deploy/bot.jar'
 
 deploy:
   provider: script
