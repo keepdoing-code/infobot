@@ -13,7 +13,7 @@ deploy:
   provider: script
   skip_cleanup: true
   script: mvn package
-  mvn org.codehaus.mojo:wagon-maven-plugin:1.0:upload -Dwagon.url=scp://$SERVER_URL -Dwagon.fromDir=standalone -Dwagon.includes=*.jar -Dwagon.toDir=/home/sa/deploy
 
 after_deploy:
+  - mvn org.codehaus.mojo:wagon-maven-plugin:1.0:upload -Dwagon.url=scp://$SERVER_URL -Dwagon.fromDir=standalone -Dwagon.includes=*.jar -Dwagon.toDir=/home/sa/deploy
   - ssh -o "StrictHostKeyChecking=no" $SERVER_URL "screen -dmS infobot bash -c 'cd /home/sa/runningbot/; java -jar /home/sa/runningbot/infobot.jar'"
