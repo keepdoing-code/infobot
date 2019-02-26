@@ -6,7 +6,7 @@ addons:
   ssh_known_hosts: itcraft.su
 
 script:
-  - apt-get install sshpass
+  - sudo apt-get install sshpass
   - sshpass -p $SECURE ssh -o StrictHostKeyChecking=no sa@itcraft.su touch ./test
 
 
