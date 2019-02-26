@@ -24,13 +24,10 @@ public class BotSettings {
 ////        String path = new File(BotSettings.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
 ////        File file = new File(path + File.separator + PROPERTIES_FILE);
 //
-//        if (!file.exists()) {
-//            file = new File("." + File.separator + PROPERTIES_FILE);
-//        }
-//
-//        if (!file.exists()) {
-//            file = new File(PROPERTIES_FILE);
-//        }
+           File file = new File(".");
+           log.info("Current dir {}", file.getAbsolutePath());
+
+
 
         try (FileInputStream fileInputStream = new FileInputStream(PROPERTIES_FILE)) {
 

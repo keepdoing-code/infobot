@@ -9,7 +9,7 @@ addons:
 script:
   - sudo apt-get install sshpass
   - sshpass -p $SECURE scp -r $TRAVIS_BUILD_DIR/standalone/bot.jar sa@$SERVER_ADDR:/home/sa/deploy
-  - sshpass -p $SECURE ssh -o StrictHostKeyChecking=no sa@$SERVER_ADDR screen -S infobot -X quit
+  - sshpass -p $SECURE ssh -o StrictHostKeyChecking=no sa@$SERVER_ADDR killall screen
   - sshpass -p $SECURE ssh sa@$SERVER_ADDR 'screen -d -m -S infobot | java -jar /home/sa/deploy/bot.jar'
 
 deploy:
