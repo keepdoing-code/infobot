@@ -17,7 +17,7 @@ import java.util.List;
 public class ConnectionFacade implements IConnectionFacade {
     private final boolean SHOW_TABLE_HEAD = false;
     private Connection connection = null;
-    private String connectionString = "jdbc:sqlite:infobot.db";
+    private String connectionString = "jdbc:sqlite:./infobot.db";
 
 
     public ConnectionFacade() {

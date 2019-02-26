@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Properties;
 
 /**
@@ -13,23 +14,25 @@ import java.util.Properties;
  */
 
 public class BotSettings {
-    public static final String PROPERTIES_FILE = "botconfig.properties";
+    public static final String PROPERTIES_FILE = "./botconfig.properties";
     public static String BOT_USERNAME;
     public static String BOT_TOKEN;
     private static Logger log = LoggerFactory.getLogger(BotSettings.class);
 
     static {
 
-        String path = new File(BotSettings.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
-        File file = new File(path +" /" + PROPERTIES_FILE);
+////        String path = new File(BotSettings.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
+////        File file = new File(path + File.separator + PROPERTIES_FILE);
+//
+//        if (!file.exists()) {
+//            file = new File("." + File.separator + PROPERTIES_FILE);
+//        }
+//
+//        if (!file.exists()) {
+//            file = new File(PROPERTIES_FILE);
+//        }
 
-        if (!file.exists()){
-            file = new File("./"+PROPERTIES_FILE);
-        }
-
-        log.info(file.getPath().toString());
-
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+        try (FileInputStream fileInputStream = new FileInputStream(PROPERTIES_FILE)) {
 
             Properties prop = new Properties();
             prop.load(fileInputStream);
@@ -37,7 +40,7 @@ public class BotSettings {
             BOT_USERNAME = prop.getProperty("BOT_USERNAME");
             BOT_TOKEN = prop.getProperty("BOT_TOKEN");
         } catch (IOException e) {
-            log.error(path);
+            log.error("No config file {}", PROPERTIES_FILE);
         }
     }
 
