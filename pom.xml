@@ -41,12 +41,12 @@
     </dependencies>
 
 
-    <distributionManagement>
-        <repository>
-            <id>ssh-repository</id>
-            <url>${env.SERVER_URL_ADDRESS}</url>
-        </repository>
-    </distributionManagement>
+    <!--<distributionManagement>-->
+        <!--<repository>-->
+            <!--<id>ssh-repository</id>-->
+            <!--<url>scp://sa@itcraft.su</url>-->
+        <!--</repository>-->
+    <!--</distributionManagement>-->
 
 
     <build>
@@ -63,6 +63,20 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <finalName>
+                        bot
+                    </finalName>
+                    <outputDirectory>
+                        ./justjar
+                    </outputDirectory>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
@@ -75,6 +89,13 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
+                    <outputDirectory>
+                        ./standalone
+                    </outputDirectory>
+                    <finalName>
+                        bot
+                    </finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
