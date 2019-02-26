@@ -11,7 +11,9 @@ jdk:
 
 deploy:
   provider: script
-  script: mvn package
+  skip_cleanup: true
+  script:
+    - mvn package
     - mvn org.codehaus.mojo:wagon-maven-plugin:1.0:upload -Dwagon.url=scp://$SERVER_URL -Dwagon.fromDir=standalone -Dwagon.includes=*.jar -Dwagon.toDir=/home/sa/deploy
 
 #after_deploy:
