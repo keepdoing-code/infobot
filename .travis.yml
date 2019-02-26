@@ -13,8 +13,9 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: mvn package
-  mvn org.codehaus.mojo:wagon-maven-plugin:1.0:upload -Dwagon.url=scp://$SERVER_URL -Dwagon.fromDir=standalone -Dwagon.includes=*.jar -Dwagon.toDir=/home/sa/deploy
+  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/<dir> <ssh-user>@<deploy-host>:path/to/files
+  on:
+    branch: master
 
 after_deploy:
-#  - ssh -o "StrictHostKeyChecking=no" $SERVER_URL "screen -dmS infobot bash -c 'cd /home/sa/runningbot/; java -jar /home/sa/runningbot/infobot.jar'"
+  - ssh sa@itcraft.su "screen -dmS infobot bash -c 'cd /home/sa/runningbot/; java -jar /home/sa/runningbot/infobot.jar'"
