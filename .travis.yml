@@ -5,3 +5,7 @@ addons:
 
 jdk:
   - oraclejdk8
+  
+deploy:
+  provider: script
+  script: "mvn deploy"
