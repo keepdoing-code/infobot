@@ -7,13 +7,12 @@ jdk:
   - oraclejdk8
 
 before_deploy:
-  - echo $ID_SECURE > $HOME/.ssh/id_rsa
-  - ssh sa@itcraft.su "screen -S infobot -X quit"
+  - ssh $SERVER_URL screen -S infobot -X quit
 
 deploy:
   provider: script
   skip_cleanup: true
-  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/standalone sa@itcraft.su:/home/sa/deploy
+  script: scp -r $TRAVIS_BUILD_DIR/standalone $SERVER_URL:/home/sa/deploy
 
 after_deploy:
-  - ssh sa@itcraft.su "screen -dmS infobot bash -c 'cd /home/sa/runningbot/; java -jar /home/sa/runningbot/infobot.jar'"
+  - ssh $SERVER_URL screen -dmS infobot bash -c 'cd /home/sa/runningbot/; java -jar /home/sa/runningbot/infobot.jar'
